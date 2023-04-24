@@ -35,5 +35,5 @@ class MidwestStudent with _$MidwestStudent {
           errorMessage: "User's is not registered",
           errorCode: 404,
         )
-      : MidwestStudent.fromJson(json);
+      : StudentData.fromJson(json);
 }

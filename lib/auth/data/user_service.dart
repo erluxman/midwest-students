@@ -45,10 +45,8 @@ class UserService {
   Future<MidwestStudent> userFromFirebase(User user) async {
     final StudentData userFromFirebase =
         MidwestStudent.fromFirebase(user: user) as StudentData;
-    return userFromFirebase;
     final MidwestStudent fireStoreUser =
         await fetchUserDetails((userFromFirebase).uid!);
-    return fireStoreUser;
     if (fireStoreUser is StudentData) {
       return fireStoreUser.copyWith(
         email: fireStoreUser.email ?? userFromFirebase.email,
@@ -68,34 +66,12 @@ class UserService {
     return MidwestStudent.fromJson(userData);
   }
 
-  Stream<MidwestStudent?> get currentUser {
-    return auth.authStateChanges().map((event) {
-      print("abc");
-      return event;
-    }).asyncMap((User? user) async {
-      if (user == null) {
-        return null;
-      } else {
-        try {
-          DocumentSnapshot studentSnapshot =
-              await firestore.collection('users').doc(user.uid).get();
-          final userData = studentSnapshot.data() as Map;
-          return MidwestStudent.user(
-            uid: user.uid,
-            name: userData['name'] ?? user.displayName,
-            email: user.email,
-            photoUrl: user.photoURL,
-            course: userData['course'] ?? "",
-            faculty: userData['faculty'] ?? "",
-          );
-        } catch (e) {
-          return const MidwestStudent.error(
-            errorMessage: "User's is not registered",
-            errorCode: 404,
-          );
-        }
-      }
-    });
+  Future<MidwestStudent?> get currentUser async {
+    final user = auth.currentUser;
+    if (user == null) {
+      return null;
+    }
+    return userFromFirebase(user);
   }
 
   Future<void> signOut() async {
@@ -114,5 +90,5 @@ class UserService {
         .set({'course': course, 'faculty': faculty}, SetOptions(merge: true));
   }
 
-  fetchUser() {}
+ 
 }

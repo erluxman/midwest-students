@@ -11,12 +11,14 @@ final userProvider = StateNotifierProvider<UserBloc, MidwestStudent?>((ref) {
 final repoProvider = Provider<UserService>((ref) => UserService());
 
 class UserBloc extends StateNotifier<MidwestStudent?> {
-  UserBloc(this.authRepo) : super(null);
+  UserBloc(this.authRepo) : super(null) {
+    fetchUser();
+  }
 
   final UserService authRepo;
 
   Future<void> fetchUser() async {
-    final usr = await authRepo.fetchUser();
+    final usr = await authRepo.currentUser;
     if (usr != null) {
       state = usr;
     }

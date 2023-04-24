@@ -295,14 +295,13 @@ class _$StudentData implements StudentData {
 }
 
 abstract class StudentData implements MidwestStudent {
-  const factory StudentData({
-    required final String? name,
-    required final String? email,
-    required final String? photoUrl,
-    required final String? uid,
-    required final String? course,
-    required final String? faculty,
-  }) = _$StudentData;
+  const factory StudentData(
+      {required final String? name,
+      required final String? email,
+      required final String? photoUrl,
+      required final String? uid,
+      required final String? course,
+      required final String? faculty}) = _$StudentData;
 
   factory StudentData.fromJson(Map<String, dynamic> json) =
       _$StudentData.fromJson;
