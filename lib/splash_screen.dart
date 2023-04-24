@@ -1,31 +1,47 @@
-import 'package:midwest/screen/collage_selecting_screen.dart';
 import 'package:flutter/material.dart';
-import 'package:google_sign_in/google_sign_in.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lottie/lottie.dart';
+import 'package:midwest/resources/animations.dart';
+import 'package:midwest/resources/images.dart';
 
-import 'auth/google_login_auth.dart';
+import 'auth/user_bloc.dart';
 
-final GoogleSignIn _googleSignIn = GoogleSignIn(scopes: ['email']);
-
-class AuthSplashScreen extends StatefulWidget {
+class AuthSplashScreen extends ConsumerStatefulWidget {
   const AuthSplashScreen({super.key});
 
   @override
-  State<AuthSplashScreen> createState() => _AuthSplashScreenState();
+  ConsumerState<ConsumerStatefulWidget> createState() =>
+      _AuthSplashScreenState();
 }
 
-class _AuthSplashScreenState extends State<AuthSplashScreen> {
+class _AuthSplashScreenState extends ConsumerState<AuthSplashScreen> {
+  bool showLoginButton = false;
+  double scale = 0.95;
   @override
   void initState() {
-    _googleSignIn.onCurrentUserChanged.listen((account) {
-      setState(() {});
-    });
-    _googleSignIn.signInSilently();
     super.initState();
+    showButtons();
+  }
+
+  Future<void> showButtons() async {
+    await Future.delayed(const Duration(seconds: 2));
+    if (mounted) {
+      setState(() {
+        showLoginButton = true;
+      });
+    }
+    await Future.delayed(const Duration(milliseconds: 20));
+    if (mounted) {
+      setState(() {
+        scale = 1;
+      });
+    }
   }
 
   @override
   Widget build(BuildContext context) {
+    final UserBloc userBloc = ref.watch(userProvider.notifier);
+
     return Scaffold(
         backgroundColor: const Color.fromARGB(174, 135, 137, 199),
         body: SingleChildScrollView(
@@ -33,69 +49,93 @@ class _AuthSplashScreenState extends State<AuthSplashScreen> {
             SizedBox(
               height: MediaQuery.of(context).size.height * 0.17,
             ),
-            Image.network(
-              "https://www.mwu.edu.np/wp-content/themes/muniversity/images/mu%20logo.png",
+            Image.asset(
+              Images.midWestLogo,
               height: 130,
               width: 130,
             ),
             const SizedBox(
               height: 15,
             ),
-            Center(
-              child: Lottie.network(
-                "https://assets10.lottiefiles.com/packages/lf20_1a8dx7zj.json",
-                width: 200,
-              ),
-            ),
             const Text(
               'Mid-West\nUniversity',
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 30,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            Center(
+              child: Lottie.asset(
+                Animations.books,
+                width: 200,
+                height: 250,
+              ),
             ),
             const SizedBox(
               height: 40,
             ),
-            Container(
-              margin: const EdgeInsets.symmetric(horizontal: 10),
-              child: ElevatedButton(
-                onPressed: () async {
-                  await FirebaseServices().signInWithGoogle();
-                  // ignore: use_build_context_synchronously
-                  Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => CollageSelectingScreen()));
-                },
-                style: ButtonStyle(backgroundColor:
-                    MaterialStateProperty.resolveWith((states) {
-                  if (states.contains(MaterialState.pressed)) {
-                    return Colors.black26;
-                  }
-                  return Colors.white;
-                })),
-                child: Padding(
-                  padding: const EdgeInsets.all(10),
-                  child: Row(
-                    //   mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Image.network(
-                        "https://img.freepik.com/premium-psd/google-icon-isolated_68185-565.jpg?w=2000",
-                        height: 40,
-                        width: 40,
+            if (showLoginButton)
+              AnimatedScale(
+                scale: scale,
+                duration: const Duration(milliseconds: 300),
+                child: Container(
+                  margin: const EdgeInsets.symmetric(horizontal: 32),
+                  child: ElevatedButton(
+                    onPressed: () async {
+                      try {
+                        await userBloc.signInWithGoogle();
+                      } catch (e) {
+                        //show snackbar
+                        ScaffoldMessenger.of(context)
+                            .showSnackBar(const SnackBar(
+                          content: Text("Error Logging In"),
+                        ));
+                      }
+                    },
+                    style: ButtonStyle(
+                      backgroundColor: MaterialStateProperty.resolveWith(
+                        (states) {
+                          if (states.contains(MaterialState.pressed)) {
+                            return Colors.black26;
+                          }
+                          return Colors.white;
+                        },
                       ),
-                      // const SizedBox(
-                      //   width: 10,
-                      // ),
-                      const Text(
-                        "Continue with Google",
-                        style: TextStyle(
-                            fontSize: 24,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.black87),
+                      shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                        RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(300.0),
+                          side: const BorderSide(color: Colors.black),
+                        ),
                       ),
-                    ],
+                    ),
+                    child: Container(
+                      padding: const EdgeInsets.all(10),
+                      child: Row(
+                        children: [
+                          Image.network(
+                            "https://upload.wikimedia.org/wikipedia/commons/thumb/5/53/Google_%22G%22_Logo.svg/706px-Google_%22G%22_Logo.svg.png",
+                            height: 28,
+                            width: 28,
+                          ),
+                          const Expanded(
+                            child: Center(
+                              child: Text(
+                                "Continue with Google",
+                                style: TextStyle(
+                                    fontSize: 20,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.black87),
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: 28),
+                        ],
+                      ),
+                    ),
                   ),
                 ),
               ),
-            ),
           ]),
         ));
   }
