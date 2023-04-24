@@ -24,7 +24,7 @@ class _AuthSplashScreenState extends ConsumerState<AuthSplashScreen> {
   }
 
   Future<void> showButtons() async {
-    await Future.delayed(const Duration(seconds: 2));
+    await Future.delayed(const Duration(seconds: 1));
     if (mounted) {
       setState(() {
         showLoginButton = true;
@@ -43,7 +43,7 @@ class _AuthSplashScreenState extends ConsumerState<AuthSplashScreen> {
     final UserBloc userBloc = ref.watch(userProvider.notifier);
 
     return Scaffold(
-        backgroundColor: const Color.fromARGB(174, 135, 137, 199),
+        backgroundColor: Colors.white,
         body: SingleChildScrollView(
           child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
             SizedBox(
@@ -60,7 +60,7 @@ class _AuthSplashScreenState extends ConsumerState<AuthSplashScreen> {
             const Text(
               'Mid-West\nUniversity',
               style: TextStyle(
-                color: Colors.white,
+                color: Color(0Xff111177),
                 fontSize: 30,
                 fontWeight: FontWeight.bold,
               ),
@@ -97,20 +97,28 @@ class _AuthSplashScreenState extends ConsumerState<AuthSplashScreen> {
                       backgroundColor: MaterialStateProperty.resolveWith(
                         (states) {
                           if (states.contains(MaterialState.pressed)) {
-                            return Colors.black26;
+                            return Colors.white70;
                           }
                           return Colors.white;
+                        },
+                      ),
+                      elevation: MaterialStateProperty.resolveWith(
+                        (states) {
+                          if (states.contains(MaterialState.pressed)) {
+                            return 0;
+                          }
+                          return 16 - (1 - scale) * 5;
                         },
                       ),
                       shape: MaterialStateProperty.all<RoundedRectangleBorder>(
                         RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(300.0),
-                          side: const BorderSide(color: Colors.black),
+                          side: const BorderSide(color: Colors.white),
                         ),
                       ),
                     ),
                     child: Container(
-                      padding: const EdgeInsets.all(10),
+                      padding: const EdgeInsets.all(12),
                       child: Row(
                         children: [
                           Image.network(
