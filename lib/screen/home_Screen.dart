@@ -1,5 +1,5 @@
 import 'package:midwest/screen/semester.dart';
-import 'package:carousel_pro/carousel_pro.dart';
+// import 'package:carousel_pro/carousel_pro.dart';
 import 'package:flutter/material.dart';
 
 import '../widget/cards.dart';
@@ -67,30 +67,31 @@ class HomeScreen extends StatelessWidget {
         height: 260.0,
         child: Stack(
           children: [
-            Carousel(
-              boxFit: BoxFit.cover,
-              borderRadius: true,
-              dotSize: 6.0,
-              dotIncreasedColor: Colors.black,
-              dotBgColor: Colors.transparent,
-              indicatorBgPadding: 2.9,
-              dotVerticalPadding: 2.9,
-              animationDuration: const Duration(microseconds: 200),
-              images: [
-                Image.network(
-                  '${college['imgs']}',
-                  fit: BoxFit.cover,
-                ),
-                Image.network(
-                  '${college['imgs']}',
-                  fit: BoxFit.cover,
-                ),
-                Image.network(
-                  '${college['imgs']}',
-                  fit: BoxFit.cover,
-                ),
-              ],
-            ),
+            Text("Hello World")
+            // Carousel(
+            //   boxFit: BoxFit.cover,
+            //   borderRadius: true,
+            //   dotSize: 6.0,
+            //   dotIncreasedColor: Colors.black,
+            //   dotBgColor: Colors.transparent,
+            //   indicatorBgPadding: 2.9,
+            //   dotVerticalPadding: 2.9,
+            //   animationDuration: const Duration(microseconds: 200),
+            //   images: [
+            //     Image.network(
+            //       '${college['imgs']}',
+            //       fit: BoxFit.cover,
+            //     ),
+            //     Image.network(
+            //       '${college['imgs']}',
+            //       fit: BoxFit.cover,
+            //     ),
+            //     Image.network(
+            //       '${college['imgs']}',
+            //       fit: BoxFit.cover,
+            //     ),
+            //   ],
+            // ),
           ],
         ),
       );
