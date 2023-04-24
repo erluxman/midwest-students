@@ -5,26 +5,36 @@ import 'package:midwest/auth/data/user_service.dart';
 import 'model/midwest_student.dart';
 
 final userProvider = StateNotifierProvider<UserBloc, MidwestStudent?>((ref) {
-  return UserBloc(UserService());
+  return UserBloc(ref.read(repoProvider));
 });
 
+final repoProvider = Provider<UserService>((ref) => UserService());
+
 class UserBloc extends StateNotifier<MidwestStudent?> {
-  UserBloc(this.authRepo) : super(null) {
-    authRepo.currentUser.listen((user) {
-      state = user;
-    });
-  }
+  UserBloc(this.authRepo) : super(null);
+
   final UserService authRepo;
 
-  void setCourse({required String course, required String faculty}) {
-    if (state == null) return;
-    state = state?.copyWith(course: course, faculty: faculty);
+  Future<void> fetchUser() async {
+    final usr = await authRepo.fetchUser();
+    if (usr != null) {
+      state = usr;
+    }
+  }
 
-    authRepo.setCourse(userId: state!.uid!, course: course, faculty: faculty);
+  void setCourse({required String course, required String faculty}) {
+    if (state == null || state is StudentError) return;
+    state = (state as StudentData).copyWith(course: course, faculty: faculty);
+
+    authRepo.setCourse(
+        userId: (state as StudentData).uid!, course: course, faculty: faculty);
   }
 
   Future<void> signInWithGoogle() async {
-    return authRepo.signInWithGoogle();
+    final usr = await authRepo.signInWithGoogle();
+    if (usr is StudentData) {
+      state = usr;
+    }
   }
 
   Future<void> signOut() async {

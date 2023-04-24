@@ -87,9 +87,9 @@ class _AuthSplashScreenState extends ConsumerState<AuthSplashScreen> {
                         await userBloc.signInWithGoogle();
                       } catch (e) {
                         //show snackbar
-                        ScaffoldMessenger.of(context)
-                            .showSnackBar(const SnackBar(
-                          content: Text("Error Logging In"),
+                        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                          content: Text(
+                              "Error Logging In with Google ${e.toString()}"),
                         ));
                       }
                     },

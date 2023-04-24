@@ -31,25 +31,20 @@ class MainApp extends ConsumerWidget {
   }
 }
 
-class Home extends ConsumerWidget {
+class Home extends ConsumerWidget with WidgetsBindingObserver {
   const Home({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final MidwestStudent? student = ref.watch(userProvider);
-    Widget? homeScreen;
-    if (student == null) {
-      print("AuthSplashScreen");
-
-      homeScreen = const AuthSplashScreen();
-    } else if (student.course == null || student.faculty == null) {
-      print("CollageSelectingScreen");
-
-      homeScreen = const CollageSelectingScreen();
-    } else {
-      print("HomeScreen");
-      homeScreen = HomeScreen();
+    if (student == null || student is StudentError) {
+      return const AuthSplashScreen();
     }
-    return homeScreen;
+    final info = student as StudentData;
+
+    if (info.course == null || student.faculty == null) {
+      return const CollageSelectingScreen();
+    }
+    return HomeScreen();
   }
 }

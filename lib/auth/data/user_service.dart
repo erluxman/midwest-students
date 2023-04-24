@@ -10,7 +10,14 @@ class UserService {
 
   FirebaseAuth get auth => FirebaseAuth.instance;
   GoogleSignIn googleSignIn = GoogleSignIn();
-  Future<void> signInWithGoogle() async {
+
+  DocumentReference userRef(String userId) => firestore.doc("users/$userId");
+
+  Future<MidwestStudent> signInWithGoogle() async {
+    const errorUser = MidwestStudent.error(
+      errorMessage: "Failed To Login with Google",
+      errorCode: 401,
+    );
     try {
       final GoogleSignInAccount? googleSignInAccount =
           await googleSignIn.signIn();
@@ -20,14 +27,45 @@ class UserService {
         final AuthCredential authCredential = GoogleAuthProvider.credential(
             accessToken: googleSignInAuthentication.accessToken,
             idToken: googleSignInAuthentication.idToken);
-        signOut().then((value) async {
-          final result = await auth.signInWithCredential(authCredential);
-          print("User signed in ${result.user?.displayName}");
-        });
+
+        final result = await auth.signInWithCredential(authCredential);
+        if (result.user == null) {
+          return errorUser;
+        }
+        return userFromFirebase(result.user!);
+      } else {
+        return errorUser;
       }
     } on FirebaseAuthException catch (e) {
-      print(e.message);
+      print(e);
+      return errorUser;
     }
+  }
+
+  Future<MidwestStudent> userFromFirebase(User user) async {
+    final StudentData userFromFirebase =
+        MidwestStudent.fromFirebase(user: user) as StudentData;
+    return userFromFirebase;
+    final MidwestStudent fireStoreUser =
+        await fetchUserDetails((userFromFirebase).uid!);
+    return fireStoreUser;
+    if (fireStoreUser is StudentData) {
+      return fireStoreUser.copyWith(
+        email: fireStoreUser.email ?? userFromFirebase.email,
+        name: fireStoreUser.name ?? userFromFirebase.name,
+        photoUrl: fireStoreUser.photoUrl ?? userFromFirebase.photoUrl,
+        uid: fireStoreUser.uid ?? userFromFirebase.uid,
+      );
+    } else {
+      return userFromFirebase;
+    }
+  }
+
+  Future<MidwestStudent> fetchUserDetails(String userId) async {
+    final userSnap = await userRef(userId).get();
+    final Map<String, dynamic> userData = ((userSnap.data() ?? {}) as Map)
+        .map((key, value) => MapEntry(key.toString(), value));
+    return MidwestStudent.fromJson(userData);
   }
 
   Stream<MidwestStudent?> get currentUser {
@@ -42,7 +80,7 @@ class UserService {
           DocumentSnapshot studentSnapshot =
               await firestore.collection('users').doc(user.uid).get();
           final userData = studentSnapshot.data() as Map;
-          return MidwestStudent(
+          return MidwestStudent.user(
             uid: user.uid,
             name: userData['name'] ?? user.displayName,
             email: user.email,
@@ -51,13 +89,9 @@ class UserService {
             faculty: userData['faculty'] ?? "",
           );
         } catch (e) {
-          return MidwestStudent(
-            uid: user.uid,
-            name: user.displayName,
-            email: user.email,
-            photoUrl: user.photoURL,
-            course: null,
-            faculty: null,
+          return const MidwestStudent.error(
+            errorMessage: "User's is not registered",
+            errorCode: 404,
           );
         }
       }
@@ -78,4 +112,6 @@ class UserService {
         .doc(auth.currentUser!.uid)
         .set({'course': course, 'faculty': faculty}, SetOptions(merge: true));
   }
+
+  fetchUser() {}
 }
