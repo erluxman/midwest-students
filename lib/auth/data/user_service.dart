@@ -99,6 +99,7 @@ class UserService {
   }
 
   Future<void> signOut() async {
+    await googleSignIn.signOut();
     await auth.signOut();
   }
 
