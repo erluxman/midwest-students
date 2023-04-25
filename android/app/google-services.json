@@ -58,6 +58,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "26803735170-ol8j6u058qsf62g16om3hqp54anmpb4i.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.teamtyro.midwest",
+            "certificate_hash": "777c96b91862c4d53a7b64ded43db917dd9630a5"
+          }
+        },
+        {
           "client_id": "26803735170-16idd5hklgo1jm7cfbhl0tbeqd4chanj.apps.googleusercontent.com",
           "client_type": 3
         }
