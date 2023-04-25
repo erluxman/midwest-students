@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../auth/user_bloc.dart';
-import '../splash_screen.dart';
 
 class HomeScreen extends ConsumerWidget {
   HomeScreen({super.key});
@@ -15,7 +14,7 @@ class HomeScreen extends ConsumerWidget {
     final Map college = {};
     return Scaffold(
       appBar: AppBar(
-        title: Text(
+        title: const Text(
           "Title",
         ),
         actions: [
@@ -26,7 +25,7 @@ class HomeScreen extends ConsumerWidget {
               icon: const Icon(Icons.logout))
         ],
       ),
-      body: Center(child: Text("hi")),
+      body: const Center(child: Text("hi")),
     );
   }
 }
