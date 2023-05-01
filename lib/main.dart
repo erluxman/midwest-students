@@ -45,6 +45,6 @@ class Home extends ConsumerWidget with WidgetsBindingObserver {
     if (info.course == null || student.faculty == null) {
       return const CollageSelectingScreen();
     }
-    return HomeScreen();
+    return const HomeScreen();
   }
 }
